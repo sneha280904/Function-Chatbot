@@ -1,50 +1,108 @@
+# Chatbot
 
-# OIBSIP-Task-3
+This repository contains the codebase for a rule-based chatbot developed by Dhiyotech Pvt. Ltd. The chatbot operates strictly based on predefined functions and a specific dataset, ensuring consistent and predictable interactions.
 
-This repository contains the solution for **Task 3** of the Oasis Infobyte Internship Program. The task is to build a **basic to-do list web application** using HTML, CSS, and JavaScript.
+## Table of Contents
 
-## Project Description
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Dataset](#dataset)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
-The goal of this task is to create a **To-Do List App** where users can add, mark, and delete tasks. The application is fully client-side and does not require any backend or database. All logic is handled using JavaScript in the browser.
+## Overview
+
+The chatbot is designed to provide responses based on a fixed set of rules and a structured dataset. It is ideal for applications where controlled and consistent interactions are required.
 
 ## Features
 
-- Add new tasks
-- Mark tasks as completed
-- Delete tasks from the list
-- Clean and user-friendly interface
-- Responsive design for different screen sizes
+- Rule-based response generation
+- Utilizes a structured SQL dataset
+- Modular codebase for easy maintenance
+- Simple web interface using Flask
 
-## Technologies Used
+## Installation
 
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
+1. **Clone the repository:**
 
-## How to Use
-
-1. Clone the repository:
    ```bash
-   git clone https://github.com/sneha280904/OIBSIP-Task3.git
+   git clone https://github.com/himanshudhiyotech/chatbot.git
+   cd chatbot
+   git checkout Development-Sneha
    ```
 
-2. Navigate into the project directory:
+
+2. **Create a virtual environment (optional but recommended):**
+
    ```bash
-   cd OIBSIP-Task3
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. Open `index.html` in your browser:
-   - Double-click `index.html`
-   - Or right-click and choose "Open with" > your browser
 
-## File Structure
+3. **Install the required dependencies:**
 
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+
+## Usage
+
+1. **Set up the database:**
+
+   Ensure you have a MySQL server running. Create a database and import the provided `chatbotdata.sql` file:
+
+   ```bash
+   mysql -u your_username -p
+   CREATE DATABASE chatbot_db;
+   USE chatbot_db;
+   SOURCE chatbotdata.sql;
+   ```
+
+
+2. **Configure database connection:**
+
+   Update the database connection details in `app.py` to match your MySQL configuration.
+
+3. **Run the application:**
+
+   ```bash
+   python app.py
+   ```
+
+
+4. **Access the chatbot:**
+
+   Open your web browser and navigate to `http://localhost:5000` to interact with the chatbot.
+
+## Dataset
+
+- **`chatbotdata.sql`**: Contains the SQL script to set up the chatbot's database with predefined intents and responses.
+- **`dataset.json`**: Provides a JSON representation of the chatbot's intents and responses, useful for understanding the data structure or for potential integration with other platforms.
+
+## Project Structure
+
+
+```plaintext
+├── app.py                         # Main application file containing Flask routes and chatbot logic
+├── chatbotdata.sql                # SQL script to set up the chatbot database
+├── dataset.json                   # JSON representation of intents and responses
+├── requirements.txt               # Python dependencies
+├── templates/
+│   └── index.html                 # HTML template for the chatbot interface
+├── Talent Spiral Chatbot Dataset Documentation.docx  # Documentation detailing the dataset
+└── README.md                      # Project documentation
 ```
-OIBSIP-Task3/
-│
-├── index.html        # Main HTML file
-├── style.css         # CSS file for styling the app
-├── script.js         # JavaScript for task functionality
-└── README.md         # Project documentation
-```
 
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and create a new branch for your feature or bugfix. Once done, submit a pull request for review.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
