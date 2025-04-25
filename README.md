@@ -14,5 +14,3 @@ A basic chatbot application developed as **Task 3** for the **Oasis Infobyte And
 - **Java**: Core programming language for Android development.
 - **Android Studio**: Integrated development environment for building Android applications. ([python-chatbot · GitHub Topics](https://github.com/topics/python-chatbot?utm_source=chatgpt.com))
 
-## 📁 Project Structure
-
