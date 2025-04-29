@@ -33,7 +33,7 @@ with app.app_context():
 # <------------- Utility Functions ------------- >
 def load_dataset():
     try:
-        with open("D:\\Coding\\ChatBot\\Funct-chatbot\\dataset.json", "r", encoding="utf-8") as file:
+        with open("D:\\Coding\\Python-Projects\\QuickBot-Chat\\dataset.json", "r", encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError:
         print("Dataset file not found.")
@@ -87,13 +87,37 @@ def respond(query_category, query_subcategory, input_text):
     return "Sorry, I don't have an answer for that. <br> Please rephrase your question, or type BACK to select/change query categories."
 
 # <------------- Validation Functions ------------- >
-phone_regex = r'^(?:\+91|)[1-9][0-9]{9}$'
-def validate_phone_number(phone):
-    return bool(re.match(phone_regex, phone))
+import re
+import phonenumbers
+import dns.resolver
 
-email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+# Set of known disposable email domains
+blocklist = {"mailinator.com", "tempmail.com", "10minutemail.com"}  # Extend as needed
+
+def validate_phone_number(phone, region='IN'):
+    """
+    Validates Indian phone number using regex and phonenumbers library.
+    """
+    try:
+        phone_regex = r'^[6-9]\d{9}$'
+        parsed = phonenumbers.parse(phone, region)
+        return re.match(phone_regex, phone) and phonenumbers.is_possible_number(parsed) and phonenumbers.is_valid_number(parsed)
+    except:
+        return False
+
 def validate_email(email):
-    return bool(re.match(email_regex, email))
+    """
+    Validates email using regex, checks against disposable domains, and MX record existence.
+    """
+    try:
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        domain = email.split('@')[-1].lower()
+        if not re.match(email_regex, email) or domain in blocklist:
+            return False
+        return len(dns.resolver.resolve(domain, 'MX')) > 0
+    except:
+        return False
+
 
 # <------------- Routes ------------- >
 @app.route("/", methods=["GET"])
