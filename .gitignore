@@ -2,5 +2,5 @@
 *.zip
 
 chatbotdata.sql
-dataset\dataset.json
+dataset.json
 Talent-Spiral-Chatbot-Dataset-Documentation.docx
