@@ -2,5 +2,5 @@
 *.zip
 
 chatbotdata.sql
-D:/Coding/Python-Projects/QuickBot-Chat/dataset
+dataset\dataset.json
 Talent-Spiral-Chatbot-Dataset-Documentation.docx
