@@ -1,258 +1,71 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-import json
-import re
+### <---------- Imports ---------->
+# Import Flask and configuration settings
+from flask import Flask, session
+from config import Config 
 
-# <------------- Flask App and Database Setup ------------- >
+# Importing blueprints for routing
+from chat.route.chatRoute import chat_bp
+from dashboard.routes.dashRoutes import dash_bp
+
+# Importing database initialization function
+from database.database.database import initializeDb
+
+# Importing CORS for cross-origin requests handling
+from flask_cors import CORS
+
+### <---------- App Setup ---------->
+# Initialize Flask application
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
 
-# Configure MySQL database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Sarita&2007@localhost:3306/chatbotdata'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Enable Cross-Origin Resource Sharing (CORS)
+CORS(app, origins="*", supports_credentials=True)  # Allow all domains (for testing)
 
-# Initialize the database
-db = SQLAlchemy(app)
+# # Simulated in-memory session store
+# session_store = {}
 
-# <------------- Database Model ------------- >
-class User(db.Model):
-    __tablename__ = 'userDetail'
-    user_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    phoneNo = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    query_description = db.Column(db.String(100))
+# Set the secret key for sessions
+app.secret_key = 'your_secret_key'
 
-# Create tables
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f"Error creating database tables: {str(e)}")
+# # <---------- Session Configuration ---------->
+# # Configure session type (could use 'redis', 'sqlalchemy', etc.)
+# app.config['SESSION_TYPE'] = 'filesystem'
 
-# <------------- Utility Functions ------------- >
-def load_dataset():
-    try:
-        with open("D:\\Coding\\Python-Projects\\QuickBot-Chat\\dataset.json", "r", encoding="utf-8") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        print("Dataset file not found.")
-        return {}
-    except json.JSONDecodeError:
-        print("Error decoding the dataset JSON.")
-        return {}
-    except Exception as e:
-        print(f"Unexpected error: {str(e)}")
-        return {}
+# # Make session non-permanent (session data won't persist after closing the browser)
+# app.config['SESSION_PERMANENT'] = False
 
-dataset = load_dataset()
+# # Use a signer for session cookies
+# app.config['SESSION_USE_SIGNER'] = True
 
-# <------------- Response Generation Functions ------------- >
-def respondcategories():
-    category_list = [f"{category}<br>" for category in dataset.keys()]
-    return "\n".join(category_list)
+# # Optional (for iframe + https cases)
+# app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Ensures cookies work with cross-site requests
+# app.config['SESSION_COOKIE_SECURE'] = False  # Cookies won't be sent over HTTPS in this case
 
-def respondsubcategories(query_category_c):
-    query_category = query_category_c.replace(" ", "").lower()
-    for category in dataset.keys():
-        category_c = category.lower().replace(" ", "")
-        if query_category == category_c:
-            sub_category = ["Choose from the following SubCategories: "]
-            for subcategory in dataset[category].keys():
-                sub_category.append(f"{subcategory}<br>")
-            sub_category += ["Back <br>", "Stop <br>"]
-            return "\n".join(sub_category)
-    return "Sorry, I am unable to understand your choosen category. <br> Please rephrase your question, or type BACK to select/change query categories."
+# <---------- Configuration Loading ---------->
+# Load configuration settings from config.py
+app.config.from_object(Config)
 
-def respondquestions(query_subcategory):
-    query_subcategory = query_subcategory.replace(" ", "").lower()
-    for category in dataset.keys(): 
-        for subcategory in dataset[category]:  
-            if query_subcategory == subcategory.replace(" ", "").lower():
-                questions = ["Choose from the following questions: "]
-                for question_entry in dataset[category][subcategory]:  
-                    questions.append(f"{question_entry['question']}<br>")
-                questions += ["Back <br>", "Thank You <br>", "Stop <br>"]
-                return "\n".join(questions)
-    return "Sorry, I am unable to understand your choosen subcategory. <br> Please rephrase your question, or type BACK to select/change query categories."
+# <---------- Database Initialization ---------->
+# Initialize the database connection
+initializeDb(app)
 
-def respond(query_category, query_subcategory, input_text):
-    query_category = query_category.replace(" ", "").lower()
-    query_subcategory = query_subcategory.replace(" ", "").lower()
-    for category in dataset.keys():
-        for subcategory in dataset[category].keys():
-            for entry in dataset[category][subcategory]: 
-                if input_text.lower() in entry["question"].lower():
-                    return entry["answer"]
-    return "Sorry, I don't have an answer for that. <br> Please rephrase your question, or type BACK to select/change query categories."
+# <---------- Blueprint Registration ---------->
+# Register the 'chat' and 'dashboard' blueprints
+app.register_blueprint(chat_bp, url_prefix='/')
+app.register_blueprint(dash_bp, url_prefix='/dashboard')
 
-# <------------- Validation Functions ------------- >
-import re
-import phonenumbers
-import dns.resolver
+### <---------- After Request Handling ---------->
+# This function runs after each request to modify the response headers
+# @app.after_request
+# def after_request(response):
+#     response.headers['X-Frame-Options'] = 'ALLOWALL'  # Allow iframe embedding
+#     response.headers['Access-Control-Allow-Origin'] = '*'  # Allow all origins
+#     return response
 
-# Set of known disposable email domains
-blocklist = {"mailinator.com", "tempmail.com", "10minutemail.com"}  # Extend as needed
-
-def validate_phone_number(phone, region='IN'):
-    """
-    Validates Indian phone number using regex and phonenumbers library.
-    """
-    try:
-        phone_regex = r'^[6-9]\d{9}$'
-        parsed = phonenumbers.parse(phone, region)
-        return re.match(phone_regex, phone) and phonenumbers.is_possible_number(parsed) and phonenumbers.is_valid_number(parsed)
-    except:
-        return False
-
-def validate_email(email):
-    """
-    Validates email using regex, checks against disposable domains, and MX record existence.
-    """
-    try:
-        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-        domain = email.split('@')[-1].lower()
-        if not re.match(email_regex, email) or domain in blocklist:
-            return False
-        return len(dns.resolver.resolve(domain, 'MX')) > 0
-    except:
-        return False
-
-
-# <------------- Routes ------------- >
-@app.route("/", methods=["GET"])
-def index():
-    session["chat_history"] = [{"sender": "bot", "text": "Type HELLO"}]
-    session["step"] = "greet"
-    session["query_category"] = ""
-    session["query_subcategory"] = ""
-    return render_template("chat.html", chat_history=session["chat_history"])
-
-@app.route("/chat", methods=["POST"])
-def chatbot():
-    input_text = request.form["message"].strip()
-    query_category = ""
-    query_subcategory = ""
-    if not input_text:
-        return redirect(url_for("index"))
-
-    if "chat_history" not in session:
-        session["chat_history"] = []
-        session["step"] = "greet"
-
-    response = ""
-
-    # ------------- >
-    # Chatbot Conversation Flow
-    # ------------- >
-    if session["step"] == "greet":
-        response = "Hello! What is your name?"
-        session["step"] = "ask_name"
-
-    elif session["step"] == "ask_name":
-        session["name"] = input_text
-        response = f"Nice to meet you, {input_text}! Please enter your email."
-        session["step"] = "ask_email"
-
-    elif session["step"] == "ask_email":
-        if validate_email(input_text):
-            session["email"] = input_text
-            response = "Thanks! Now, enter your phone number."
-            session["step"] = "ask_phone"
-        else:
-            response = "Please enter a valid email address."
-
-    elif session["step"] == "ask_phone":
-        if validate_phone_number(input_text):
-            session["phoneNo"] = input_text
-            response = respondcategories()
-            session["step"] = "ask_query_category"
-        else:
-            response = "Please enter a valid phone number."
-
-    elif session["step"] == "ask_query_category":
-        session["query_category"] = input_text
-        input_text = input_text.replace(" ", "")
-        new_user = User(
-            name=session["name"],
-            email=session["email"],
-            phoneNo=session["phoneNo"],
-            query_description=session["query_category"]
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        response = respondsubcategories(input_text)
-        session["step"] = "ask_query_subcategory"
-
-    elif session["step"] == "ask_query_category_again":
-        session["query_category"] = input_text
-        input_text = input_text.replace(" ", "")
-        response = respondsubcategories(input_text)
-        session["step"] = "ask_query_subcategory"
-
-    elif session["step"] == "ask_query_subcategory":
-        session["query_subcategory"] = input_text
-        input_text = input_text.replace(" ", "")
-        if input_text.lower() == "back":
-            session["step"] = "ask_query_category_again"
-            session["query_subcategory"] = ""
-            session["query_category"] = ""
-            response = respondcategories()
-        elif input_text.lower() == 'stop':
-            session['step'] = "completed"
-            response = "Are you satisfied with the response? Type Yes or No"
-        else:
-            response = respondquestions(input_text)
-            session["step"] = "ask_query"
-
-    elif session["step"] == "ask_query":
-        session["query"] = input_text
-        query_category = session["query_category"]
-        query_subcategory = session["query_subcategory"]
-        if input_text.lower().replace(" ", "") == "back":
-            session["step"] = "ask_query_subcategory"
-            response = respondsubcategories(query_category)
-        elif input_text.lower().replace(" ", "") == 'thankyou':
-            response = "Thank you! If you have more questions, type MORE and feel free to ask or type STOP to end conversation."
-            session["step"] = "more"
-        elif input_text.lower().replace(" ", "") == 'stop':
-            session['step'] = "completed"
-            response = "Are you satisfied with the response? Type Yes or No"
-        else:
-            response = respond(query_category, query_subcategory, input_text)
-            session["step"] = "ask_query"
-
-    elif session["step"] == "more":
-        session["again"] = input_text
-        if input_text.lower().replace(" ", "") == "more":
-            session["step"] = "ask_query_category_again"
-            response = respondcategories()
-        elif input_text.lower().replace(" ", "") == "stop":
-            response = "Are you satisfied with the response? Type Yes or No"
-        else: 
-            response = "Thank you! If you have more questions, type MORE and feel free to ask or type STOP to end conversation."
-
-    elif session["step"] == "completed":
-        session["again"] = input_text
-        if input_text.lower().replace(" ", "") == "yes":
-            response = "Thank you! If you have more questions, type MORE and feel free to ask. :)"
-        elif input_text.lower().replace(" ", "") == "no":
-            response = "Sorry for that :("
-        else: 
-            session["step"] = "ask_query_category_again"
-            response = respondcategories()
-
-    else:
-        response = "Error!"
-
-    # ------------- >
-    # Store Chat History
-    # ------------- >
-    session["chat_history"].append({"sender": "user", "text": input_text})
-    session["chat_history"].append({"sender": "bot", "text": response})
-    session.modified = True
-    return render_template("chat.html", chat_history=session["chat_history"])
-
-# <------------- Run App ------------- >
+### <---------- Main Entry Point ---------->
+# Start the Flask application
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=5000,debug=True)
+
+# # Uncomment for debugging with Flask’s built-in server
+# if __name__ == "__main__":
+#     app.run(debug=True)

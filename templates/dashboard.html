@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <---------- Meta and Title ---------->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inquiry Dashboard</title>
+    
+    <!-- <---------- Link to CSS Stylesheet ----------> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+
+<body>
+    <!-- <---------- Section to Trigger New Search and Display Total Count ---------->
+    <div class="search-section">
+        <!-- New search button that stays visible even after inquiries are shown -->
+        <a href="/dashboard" class="new-search-btn">New Search</a>
+        
+        <!-- Total Inquiry Count -->
+        <div class="inquiry-count">
+            Total Inquiries: {{ results|length }}
+        </div>
+    </div>
+
+    <!-- <---------- Table Container Section ---------->
+    <div class="table-container">
+        <h2>Inquiries from {{ start_date.strftime('%Y-%m-%d') }} to {{ end_date.strftime('%Y-%m-%d') }}</h2>
+        
+        <!-- <---------- Inquiry Data Table ---------->
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>user Id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>phone No</th>
+                    <th>query Description</th>
+                    <th>Inquiry Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <---------- Loop through Inquiry Results ----------> 
+                {% for inquiry in results %}
+                <tr>
+                    <td>{{ inquiry.userId }}</td>
+                    <td>{{ inquiry.name }}</td>
+                    <td>{{ inquiry.email }}</td>
+                    <td>{{ inquiry.phoneNo }}</td>
+                    <td>{{ inquiry.query_description }}</td>
+                    <td>{{ inquiry.DateTime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
