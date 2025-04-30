@@ -22,10 +22,10 @@ class Config:
     # Hugging Face Token for accessing Hugging Face APIs or models, fetched from the environment variable "HUGGINGFACE_TOKEN"
     HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN") 
     
-    # Address for Talent Spiral's office location
+    # Address 
     ADDRESS = "Bhopal, Madhya Pradesh"
     
-    # Contact information for Talent Spiral
+    # Contact information for my website
     CONTACT_INFO = (
         "You can contact at sneha280904@gmail.com or call +91-6266258679."
     )

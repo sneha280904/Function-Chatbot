@@ -1,6 +1,7 @@
 ### <---------- Imports ---------->
 # Import Flask modules for routing and template rendering
 from flask import Flask, render_template, request, jsonify, Blueprint
+
 # Import SQLAlchemy for database handling (not used in this file but included for future use)
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,11 +17,9 @@ dash_bp = Blueprint("dash", __name__)
 @dash_bp.route('/', methods=['GET', 'POST'])
 def inquiry_dashboard():
 
-    # If the request method is POST, process the form submission
+    ## If the request method is POST, process the form submission using controller
     if request.method == 'POST':
         return dashController.dashController()
 
-    # If the request method is GET, render the inquiry form
+    ## If the request method is GET, render the inquiry form
     return render_template('inquiry_form.html')
-
-
