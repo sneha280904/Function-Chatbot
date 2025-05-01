@@ -2,34 +2,34 @@
 <html lang="en">
 
 <head>
-    <!-- <---------- Meta Tags ----------> -->
+    <!-- <---------- Meta Tags ---------->
     <meta charset="UTF-8"> <!-- Set the character encoding to UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensure responsive layout -->
     
-    <!-- <---------- Title of the Page ----------> -->
+    <!-- <---------- Title of the Page ---------->
     <title>Chatbot</title>
 
-    <!-- <---------- Link to External Stylesheets ----------> -->
+    <!-- <---------- Link to External Stylesheets ---------->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Link to custom CSS file -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Link to Font Awesome for icons -->
 
-    <!-- <---------- Favicon (Commented Out) ----------> -->
+    <!-- <---------- Favicon (Commented Out) ---------->
     <!-- <link rel="icon" href="https://talentspiral.com/wp-content/uploads/2023/11/talent-spiral-logo.png" type="image/x-icon" /> -->
 
 </head>
 
 <body>
 
-    <!-- <---------- Welcome Section ----------> -->
+    <!-- <---------- Welcome Section ---------->
     <div class="h1">
         <h1 id="h1-text">Welcome to the Chatbot!</h1> <!-- Welcome message -->
     </div>
 
-    <!-- <---------- Chat Container ----------> -->
+    <!-- <---------- Chat Container ---------->
     <div id="chat-container">
-        <!-- <---------- Chatbox Section ----------> -->
+        <!-- <---------- Chatbox Section ---------->
         <div id="chatbox">
-            <!-- <---------- Display Chat History ----------> -->
+            <!-- <---------- Display Chat History ---------->
             {% for msg in chat_history %}
             <div class="message {% if msg.sender == 'user' %}user-message {% else %}bot-message{% endif %}">
                 {{ msg.text | safe }} <!-- Render message content -->
@@ -38,13 +38,13 @@
         </div>
     </div>
 
-    <!-- <---------- Message Input and Send Button ----------> -->
+    <!-- <---------- Message Input and Send Button ---------->
     <form method="POST" action="/">
         <input type="text" name="message" placeholder="Type here..." required autofocus> <!-- Input field for user message -->
         <button type="submit">Send</button> <!-- Send button -->
     </form>
 
-    <!-- <---------- JavaScript Section ----------> -->
+    <!-- <---------- JavaScript Section ---------->
     <script>
         // Function to automatically scroll the chatbox to the bottom
         function scrollToBottom() {
