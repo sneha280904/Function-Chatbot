@@ -27,11 +27,9 @@ app.secret_key = 'your_secret_key'
 # Load configuration settings from config.py
 app.config.from_object(Config)
 
-
 ### <---------- Database Initialization ---------->
 # Initialize the database connection
 initializeDb(app)
-
 
 ### <---------- Blueprint Registration ---------->
 # Register the 'chat' and 'dashboard' blueprints
@@ -46,3 +44,5 @@ if __name__ == "__main__":
 # # Uncomment for debugging with Flask’s built-in server
 # if __name__ == "__main__":
 #     app.run(debug=True)
+
+
