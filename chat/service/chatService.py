@@ -14,7 +14,7 @@ class chatService:
     # Load the dataset from a JSON file
     def load_dataset(self):
         try:
-            with open("D:/Coding/Python-Projects/QuickBot-Chat/dataset", "r", encoding="utf-8") as file:
+            with open("D:/Coding/Python-Projects/QuickBot-Chat/dataset/dataset.json", "r", encoding="utf-8") as file:
                 return json.load(file)
         except FileNotFoundError:
             print("self.dataset file not found.")
