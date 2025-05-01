@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 ### <---------- Detail Table Definition ---------->
 # Represents the userDetails table in the database
 class User(db.Model):
-    __tablename__ = 'QuickBotChatUserDetailssss'  # Table name in the database
+    __tablename__ = 'QuickBotChatUserDetails'  # Table name in the database
 
     ### <---------- Columns of the userDetails Table ---------->
     userId = db.Column(db.Integer, primary_key=True)  # Primary key for userId
