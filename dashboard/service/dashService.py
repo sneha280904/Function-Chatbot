@@ -1,14 +1,17 @@
 ### <---------- Imports ---------->
+
 # Import necessary modules from Flask and database
 from flask import render_template
 from database.database.database import db
 from database.model.model import User
-# from database.model.model import Query
+# from database.model.model import Query  # Uncomment if Query model is needed later
 
 # Import datetime for date manipulation
-# from datetime import datetime, timezone
+# from datetime import datetime, timezone  # Uncomment if timezone-aware datetime is needed
+
 
 ### <---------- DashService Class ---------->
+
 class dashService:
 
     ### <---------- Constructor ---------->

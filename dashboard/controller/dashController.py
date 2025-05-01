@@ -1,4 +1,5 @@
 ### <---------- Imports ---------->
+
 # Import necessary modules from Flask
 from flask import request, render_template
 
@@ -8,33 +9,42 @@ from datetime import datetime
 # Import the dashboard service to fetch data
 from dashboard.service.dashService import dashService
 
+
 ### <---------- Initialize Service ---------->
-# Initialize the dashService instance
+
+# Create an instance of the dashService class
 dashService = dashService()
 
+
 ### <---------- DashController Class ---------->
+
 class dashController:
 
     ### <---------- Dash Controller Method ---------->
     @staticmethod
     def dashController():
-        ## Fetch the start and end date from the form
+        # Fetch the start and end dates from the submitted HTML form
         start_date = request.form['start_date']
         end_date = request.form['end_date']
         
-        ## Convert the string dates into datetime objects
+        # Convert input string dates to Python datetime objects for processing
         start_date = datetime.strptime(start_date, "%Y-%m-%d")
         end_date = datetime.strptime(end_date, "%Y-%m-%d")
         
-        ## Print the start and end dates for debugging
+        # Debug: Print the start and end dates received
         print("Start date: ", start_date)
         print("End date: ", end_date)
 
-        ## Fetch the results from the dashService using the provided dates
+        # Call the dashService to process data between the given dates
         results = dashService.dashService(start_date, end_date)
         
-        ## Print the results fetched from the service
+        # Debug: Print the results returned from the service layer
         print("Results in controller: ", results)
 
-        ## Render the dashboard page with the fetched results and date range
-        return render_template('dashboard.html', results=results, start_date=start_date, end_date=end_date) 
+        # Render the 'dashboard.html' page with the result data and original dates
+        return render_template(
+            'dashboard.html', 
+            results=results, 
+            start_date=start_date, 
+            end_date=end_date
+        )
