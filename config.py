@@ -31,6 +31,6 @@ class Config:
     )
 
     # File paths for various dataset files
-    DATASET_FILE = "D:\\Coding\\Dhiyotech_chatBot\\CPU-LLM-chatbot\\Chatbot_flask_UI_src\\dataset\\conversionTS.json"
+    DATASET_FILE = "D:/Coding/Python-Projects/QuickBot-Chat/dataset/dataset.json"
 
 
