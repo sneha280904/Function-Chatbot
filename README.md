@@ -49,7 +49,7 @@ pip install -r requirements.txt
 3. **Run the Chatbot**:
 
 ```bash
-python run_bot.py
+python app.py
 ```
 
 ---
@@ -103,6 +103,6 @@ python run_bot.py
 Feel free to fork the repo, contribute new features, or suggest improvements!
 
 Let's connect and collaborate:  
-🔗 [LinkedIn Profile](https://www.linkedin.com/in/yourprofile)
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/sneha-gupta-a78839261/)
 
 ---
