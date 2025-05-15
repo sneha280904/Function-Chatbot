@@ -1,5 +1,7 @@
 # 🤖 **QuickBot-Chat** - Function-Based Conversational Assistant
 
+Note: The source code for this project has been made private intentionally.
+
 **QuickBot-Chat** is a lightweight, function-driven chatbot designed for structured, hierarchical question-answering.  
 Built for simplicity and clarity, **QuickBot-Chat** helps users find answers by guiding them through **categories**, **subcategories**, and **specific questions**, ensuring a smooth and organized experience.
 
